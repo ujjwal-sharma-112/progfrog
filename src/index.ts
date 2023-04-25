@@ -14,6 +14,8 @@ app.use(bodyParser.json());
 
 app.use("/api/auth", router);
 
+
+// Route Listening
 app.listen(4000, () => {
   console.log("🚀 Server is up and running on port 4000.");
 });
