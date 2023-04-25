@@ -1,7 +1,7 @@
 import { Router, Response, Request } from "express";
 import prisma from "../../prisma/prisma";
 
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from "bcrypt";
 
 import { loginValidator, signUpValidator } from "../validator";
 
@@ -26,6 +26,7 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
 
   if (error) {
     return res.status(400).send({
+      type: error.details[0].path[0],
       message: error.message,
     });
   }
@@ -106,6 +107,7 @@ authRouter.get("/login", async (req: Request, res: Response) => {
 
   if (error) {
     return res.status(400).send({
+      type: error.details[0].path[0],
       message: error.message,
     });
   }

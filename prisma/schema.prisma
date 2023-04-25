@@ -11,34 +11,37 @@ datasource db {
 }
 
 model User {
-  u__id       String      @id @default(uuid())
-  username    String      @unique @db.VarChar(60)
-  email       String      @unique
-  first_name  String
-  last_name   String?
-  password    String
-  dob         DateTime?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  posts       Post[]
-  communities Community[]
+  u__id             String      @id @default(uuid())
+  username          String      @unique @db.VarChar(60)
+  email             String      @unique
+  first_name        String
+  last_name         String?
+  password          String
+  dob               DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  posts             Post[]
+  owndedCommunities Community[]
+  joinedCommunities Community[] @relation("CommunityMembers")
 }
 
 model Post {
-  p__id       String     @id @default(uuid())
+  p__id       String    @id @default(uuid())
   title       String
   body        String
-  publishedAt DateTime   @default(now())
-  publishedBy User       @relation(fields: [u__id], references: [u__id])
+  publishedAt DateTime  @default(now())
+  publishedBy User      @relation(fields: [u__id], references: [u__id])
   u__id       String
-  community   Community? @relation(fields: [c__id], references: [c__id])
-  c__id       String?
+  community   Community @relation(fields: [c__id], references: [c__id])
+  c__id       String
 }
 
 model Community {
-  c__id     String @id @default(uuid())
-  c_name    String @unique @db.VarChar(60)
-  c_owner   User   @relation(fields: [owner__id], references: [u__id])
-  owner__id String
-  posts     Post[]
+  c__id        String @id @default(uuid())
+  c_name       String @unique @db.VarChar(60)
+  c_owner      User   @relation(fields: [owner__id], references: [u__id])
+  owner__id    String
+  posts        Post[]
+  members      User[] @relation("CommunityMembers")
+  membersCount Int    @default(0)
 }
