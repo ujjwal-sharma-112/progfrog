@@ -1,11 +1,11 @@
 import { Router, Response, Request } from "express";
 import prisma from "../../prisma/prisma";
 
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from "bcrypt";
 
 import { loginValidator, signUpValidator } from "../validator";
 
-const router = Router();
+const authRouter = Router();
 
 /**
  *
@@ -18,7 +18,7 @@ const router = Router();
  *
  *
  */
-router.post("/signup", async (req: Request, res: Response) => {
+authRouter.post("/signup", async (req: Request, res: Response) => {
   const body = req.body;
 
   // Body Validation
@@ -26,6 +26,7 @@ router.post("/signup", async (req: Request, res: Response) => {
 
   if (error) {
     return res.status(400).send({
+      type: error.details[0].path[0],
       message: error.message,
     });
   }
@@ -98,7 +99,7 @@ router.post("/signup", async (req: Request, res: Response) => {
  *
  *
  */
-router.get("/login", async (req: Request, res: Response) => {
+authRouter.get("/login", async (req: Request, res: Response) => {
   const body = req.body;
 
   // Body Validation
@@ -106,6 +107,7 @@ router.get("/login", async (req: Request, res: Response) => {
 
   if (error) {
     return res.status(400).send({
+      type: error.details[0].path[0],
       message: error.message,
     });
   }
@@ -147,4 +149,4 @@ router.get("/login", async (req: Request, res: Response) => {
   }
 });
 
-export default router;
+export default authRouter;
