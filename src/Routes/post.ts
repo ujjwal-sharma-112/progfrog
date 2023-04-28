@@ -16,6 +16,9 @@ postRouter.post("/create", async (req: Request, res: Response) => {
   // }
 
   try {
+    // TODO: Check community
+    // TODO: User can only post in the community he/she is member of
+
     const post = await prisma.post.create({
       data: {
         title: body.title,
