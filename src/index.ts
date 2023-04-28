@@ -10,6 +10,19 @@ const app = Express();
 import authRouter from "./Routes/auth";
 import postRouter from "./Routes/post";
 import communityRouter from "./Routes/community";
+import prisma from "../prisma/prisma";
+
+async function main() {
+  await prisma.$connect();
+}
+
+main()
+  .catch((e) => {
+    throw e;
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

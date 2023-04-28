@@ -41,12 +41,12 @@ communityRouter.post("/create", async (req: Request, res: Response) => {
     // Updating Community Member count and member id
     const updatedCommunity = await prisma.community.update({
       where: {
-        c__id: community.c__id,
+        id: community.id,
       },
       data: {
         members: {
           connect: {
-            u__id: body.owner__id,
+            id: body.owner__id,
           },
         },
         membersCount: {
@@ -86,10 +86,10 @@ communityRouter.post("/join", async (req: Request, res: Response) => {
     // Check if user is already a member of the community
     const isMember = await prisma.community.findFirst({
       where: {
-        c__id: body.c__id,
+        id: body.c__id,
         members: {
           some: {
-            u__id: body.u__id,
+            id: body.u__id,
           },
         },
       },
@@ -104,7 +104,7 @@ communityRouter.post("/join", async (req: Request, res: Response) => {
     // Check if community exists
     const communityExists = await prisma.community.findFirst({
       where: {
-        c__id: body.c__id,
+        id: body.c__id,
       },
     });
 
@@ -117,12 +117,12 @@ communityRouter.post("/join", async (req: Request, res: Response) => {
     // Join community
     const community = await prisma.community.update({
       where: {
-        c__id: body.c__id,
+        id: body.c__id,
       },
       data: {
         members: {
           connect: {
-            u__id: body.u__id,
+            id: body.u__id,
           },
         },
         membersCount: {
