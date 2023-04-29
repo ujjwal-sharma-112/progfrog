@@ -33,6 +33,8 @@ app.use("/api/post", postRouter);
 app.use("/api/community", communityRouter);
 app.use("/api/user", userRouter);
 
-app.listen(4000 || process.env.PORT, () => {
-  console.log("🚀 Server is up and running on port 4000.");
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server is up and running on port ${PORT}.`);
 });
