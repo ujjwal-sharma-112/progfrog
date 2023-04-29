@@ -24,7 +24,6 @@ model User {
   joinedCommunities     Community[] @relation("joinedCommunities", fields: [joindedCommunitiesIds], references: [id])
   joindedCommunitiesIds String[]    @db.ObjectId
   ownedCommunities      Community[] @relation("ownedCommunities")
-  ownedCommunitiesIds   String[]    @db.ObjectId
 }
 
 model Post {
