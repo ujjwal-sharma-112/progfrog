@@ -11,19 +11,19 @@ datasource db {
 }
 
 model User {
-  id                    String      @id @default(auto()) @map("_id") @db.ObjectId
-  username              String      @unique
-  email                 String      @unique
-  first_name            String
-  last_name             String?
-  password              String
-  dob                   DateTime?
-  createdAt             DateTime    @default(now())
-  updatedAt             DateTime    @updatedAt
-  posts                 Post[]
-  joinedCommunities     Community[] @relation("joinedCommunities", fields: [joindedCommunitiesIds], references: [id])
-  joindedCommunitiesIds String[]    @db.ObjectId
-  ownedCommunities      Community[] @relation("ownedCommunities")
+  id                   String      @id @default(auto()) @map("_id") @db.ObjectId
+  username             String      @unique
+  email                String      @unique
+  first_name           String
+  last_name            String?
+  password             String
+  dob                  DateTime?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  posts                Post[]
+  joinedCommunities    Community[] @relation("joinedCommunities", fields: [joinedCommunitiesIds], references: [id])
+  joinedCommunitiesIds String[]    @default([]) @db.ObjectId
+  ownedCommunities     Community[] @relation("ownedCommunities")
 }
 
 model Post {
@@ -44,6 +44,22 @@ model Community {
   owner__id    String   @db.ObjectId
   posts        Post[]
   members      User[]   @relation("joinedCommunities", fields: [membersIds], references: [id])
-  membersIds   String[] @db.ObjectId
+  membersIds   String[] @default([]) @db.ObjectId
   membersCount Int      @default(0)
 }
+
+// model Comment = c__id, comment
+// model Post = commentIds[commentIds[][][][][][][][][]]
+
+// model Post = likedBy[[][][][][][][][]]
+
+// REACT = Routing - Protected Routes
+
+// Pages
+// Auth System Pages- Login, Signup
+// Home - Posts of Communities that we've joined
+// Community Page - HomePage of Community Itself
+// UserPage - Info User
+// Profile - Info of ourself
+// Post Creation
+// Community Create

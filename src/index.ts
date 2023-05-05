@@ -14,7 +14,14 @@ import prisma from "../prisma/prisma";
 import userRouter from "./Routes/user";
 
 async function main() {
-  await prisma.$connect();
+  await prisma
+    .$connect()
+    .then(() => {
+      console.log("Database Connected 🚀");
+    })
+    .catch((e) => {
+      console.log(e);
+    });
 }
 
 main()
