@@ -6,42 +6,44 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  u__id             String      @id @default(uuid())
-  username          String      @unique @db.VarChar(60)
-  email             String      @unique
-  first_name        String
-  last_name         String?
-  password          String
-  dob               DateTime?
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  posts             Post[]
-  owndedCommunities Community[]
-  joinedCommunities Community[] @relation("CommunityMembers")
+  id                    String      @id @default(auto()) @map("_id") @db.ObjectId
+  username              String      @unique
+  email                 String      @unique
+  first_name            String
+  last_name             String?
+  password              String
+  dob                   DateTime?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  posts                 Post[]
+  joinedCommunities     Community[] @relation("joinedCommunities", fields: [joindedCommunitiesIds], references: [id])
+  joindedCommunitiesIds String[]    @db.ObjectId
+  ownedCommunities      Community[] @relation("ownedCommunities")
 }
 
 model Post {
-  p__id       String    @id @default(uuid())
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   body        String
   publishedAt DateTime  @default(now())
-  publishedBy User      @relation(fields: [u__id], references: [u__id])
-  u__id       String
-  community   Community @relation(fields: [c__id], references: [c__id])
-  c__id       String
+  publishedBy User      @relation(fields: [u__id], references: [id])
+  u__id       String    @db.ObjectId
+  community   Community @relation(fields: [c__id], references: [id])
+  c__id       String    @db.ObjectId
 }
 
 model Community {
-  c__id        String @id @default(uuid())
-  c_name       String @unique @db.VarChar(60)
-  c_owner      User   @relation(fields: [owner__id], references: [u__id])
-  owner__id    String
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  c_name       String   @unique
+  c_owner      User     @relation("ownedCommunities", fields: [owner__id], references: [id])
+  owner__id    String   @db.ObjectId
   posts        Post[]
-  members      User[] @relation("CommunityMembers")
-  membersCount Int    @default(0)
+  members      User[]   @relation("joinedCommunities", fields: [membersIds], references: [id])
+  membersIds   String[] @db.ObjectId
+  membersCount Int      @default(0)
 }

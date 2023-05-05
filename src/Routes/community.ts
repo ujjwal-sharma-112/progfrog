@@ -16,18 +16,17 @@ communityRouter.post("/create", async (req: Request, res: Response) => {
   // }
 
   try {
-
     // Checking if community already exists or not
     const communityExists = await prisma.community.findFirst({
       where: {
         c_name: body.c_name,
-      }
-    })
+      },
+    });
 
     if (communityExists) {
       return res.status(400).send({
-        message: `Community with name ${body.c_name} already exists!`
-      })
+        message: `Community with name ${body.c_name} already exists!`,
+      });
     }
 
     // Creating Community
@@ -41,16 +40,30 @@ communityRouter.post("/create", async (req: Request, res: Response) => {
     // Updating Community Member count and member id
     const updatedCommunity = await prisma.community.update({
       where: {
-        c__id: community.c__id,
+        id: community.id,
       },
       data: {
         members: {
           connect: {
-            u__id: body.owner__id,
+            id: body.owner__id,
           },
         },
         membersCount: {
           increment: 1,
+        },
+      },
+    });
+
+    // Adding the created community to user owned Community
+    await prisma.user.update({
+      where: {
+        id: body.owner__id,
+      },
+      data: {
+        ownedCommunities: {
+          connect: {
+            id: community.id,
+          },
         },
       },
     });
@@ -86,10 +99,10 @@ communityRouter.post("/join", async (req: Request, res: Response) => {
     // Check if user is already a member of the community
     const isMember = await prisma.community.findFirst({
       where: {
-        c__id: body.c__id,
+        id: body.c__id,
         members: {
           some: {
-            u__id: body.u__id,
+            id: body.u__id,
           },
         },
       },
@@ -104,7 +117,7 @@ communityRouter.post("/join", async (req: Request, res: Response) => {
     // Check if community exists
     const communityExists = await prisma.community.findFirst({
       where: {
-        c__id: body.c__id,
+        id: body.c__id,
       },
     });
 
@@ -117,12 +130,12 @@ communityRouter.post("/join", async (req: Request, res: Response) => {
     // Join community
     const community = await prisma.community.update({
       where: {
-        c__id: body.c__id,
+        id: body.c__id,
       },
       data: {
         members: {
           connect: {
-            u__id: body.u__id,
+            id: body.u__id,
           },
         },
         membersCount: {
@@ -135,6 +148,82 @@ communityRouter.post("/join", async (req: Request, res: Response) => {
 
     res.status(200).send({
       message: "Joined community successfully!",
+      community: rest,
+    });
+  } catch (error) {
+    res.status(500).send({
+      message: "Something went wrong!",
+      error: error,
+    });
+  }
+});
+
+// Leaving a community
+communityRouter.post("/leave", async (req: Request, res: Response) => {
+  const body = req.body;
+
+  // Body Validation
+  // const { error } = leaveCommunityValidator(body);
+
+  // if (error) {
+  //   return res.status(400).send({
+  //     message: error.message,
+  //   });
+  // }
+
+  try {
+    // Check if user is a member of the community
+    const isMember = await prisma.community.findFirst({
+      where: {
+        id: body.c__id,
+        members: {
+          some: {
+            id: body.u__id,
+          },
+        },
+      },
+    });
+
+    if (!isMember) {
+      return res.status(400).send({
+        message: "You are not a member of this community!",
+      });
+    }
+
+    // Check if community exists
+    const communityExists = await prisma.community.findFirst({
+      where: {
+        id: body.c__id,
+      },
+    });
+
+    if (!communityExists) {
+      return res.status(400).send({
+        message: "Community does not exist!",
+      });
+    }
+
+    // Leave community
+    const community = await prisma.community.update({
+      where: {
+        id: body.c__id,
+      },
+      data: {
+        members: {
+          disconnect: {
+            id: body.u__id,
+          },
+        },
+        membersCount: {
+          decrement: 1,
+        },
+      },
+    });
+
+    const { owner__id, ...rest } = community;
+
+    res.status(200).send({
+      message: "Left community successfully!",
       community: rest,
     });
   } catch (error) {
