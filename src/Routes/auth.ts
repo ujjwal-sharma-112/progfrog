@@ -3,6 +3,8 @@ import prisma from "../../prisma/prisma";
 
 import * as bcrypt from "bcrypt";
 
+import jwt from "jsonwebtoken";
+
 import { loginValidator, signUpValidator } from "../validator";
 
 const authRouter = Router();
@@ -76,9 +78,21 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
 
     const { password, ...rest } = user;
 
+    // Generating Access Token
+    const token = jwt.sign(
+      {
+        id: user.id,
+      },
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: "1h",
+      }
+    );
+
     res.status(200).send({
       message: "User Created Successfully!",
       user: rest,
+      token: `Bearer ${token}`,
     });
   } catch (error) {
     res.status(500).send({
@@ -137,9 +151,21 @@ authRouter.get("/login", async (req: Request, res: Response) => {
 
     const { password, ...rest } = user;
 
+    // Generating Access Token
+    const token = jwt.sign(
+      {
+        id: user.id,
+      },
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: "1h",
+      }
+    );
+
     res.status(200).send({
       message: "Logged in Successfully!",
       user: rest,
+      token: `Bearer ${token}`,
     });
   } catch (error) {
     res.status(500).send({
@@ -148,5 +174,10 @@ authRouter.get("/login", async (req: Request, res: Response) => {
     });
   }
 });
+
+// TODO: UPDATE ROUTE OF USER
+// User can update First Name, last name
+// OTP = nodemailer = RANDOM 6 digit - send to email if randomgen = otp
+// Schema = isVerified false true
 
 export default authRouter;
