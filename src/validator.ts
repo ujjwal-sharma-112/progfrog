@@ -9,6 +9,12 @@ interface Body {
   dob: Date;
 }
 
+interface Post {
+  title: String,
+  body: String,
+  u__id: String,
+  c__id: String,
+}
 
 /**
  *
@@ -55,3 +61,27 @@ export const loginValidator = (body: Body) => {
 
   return validator.validate(body);
 };
+
+
+/**
+ *
+ *
+ *
+ *
+ ** POST CREATION VALIDATOR
+ *
+ *
+ *
+ *
+ *  */
+
+export const postCreationValidator = (body: Post) => {
+  const validator = Joi.object({
+    title: Joi.string().required(),
+    body: Joi.string().required(),
+    c__id: Joi.string().required(),
+    u__id: Joi.string().required(),
+  })
+
+  return validator.validate(body);
+}
